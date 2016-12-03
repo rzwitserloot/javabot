@@ -40,10 +40,10 @@ class AddFactoidOperation @Inject constructor(bot: Javabot, adminDao: AdminDao,
 
                 val redefine = key.startsWith("no ") || key.startsWith("no, ")
                 if (redefine) {
-                    key = key.substring(key.indexOf(" ")).trim()
+                    key = key.substring(key.indexOf(" ")).trim().toLowerCase()
 
                     factoid = factoidDao.getFactoid(key)
-                    if ( factoid == null) {
+                    if (factoid == null) {
                         responses.add(Message(event.channel, event.user, Sofia.factoidUnknown(key)))
                     }
                 } else {
@@ -56,6 +56,8 @@ class AddFactoidOperation @Inject constructor(bot: Javabot, adminDao: AdminDao,
                     }
                     if (message.isEmpty()) {
                         responses.add(Message(event, Sofia.factoidInvalidValue()))
+                    } else if (factoidDao.getFactoid(key) != null) {
+                        reponses.add(Message(event, Sofia.factoidExists(key, event.user.nick)))
                     } else {
                         factoid = Factoid(name, userName = event.user.nick)
                         factoid.name = factoid.name.dropLastWhile { it in arrayOf('.', '?', '!') }
